@@ -145,26 +145,32 @@
                 function Record(x,y){
                     var arr =[x , y];
                     spot.unshift(arr);
+                    //判断蛇头是否出界或要到自己
+                    if(x < 0||x > 39){
+                        alert("你输了");
+                        stop = true;
+                        return;
+                    }
                     if(!arrMap[x][y]){
                         alert("你输了");
                         stop = true;
                         return;
                     }
+                    //初始化地图
                     initMap();
+                    //添加食物
                     arrMap[spot1[0]][spot1[1]]=2;
+                    //减掉多余点,保持蛇的长度
                     if(spot.length !== length){
                         spot.pop();
                     }
-                    if(x<0||x>39){
-                        alert("你输了");
-                        stop = true;
-                        return;
-                    }
+                    //吃到食物长度增加
                     if(arrMap[x][y]===2){
                         length++;
                         arrMap[x][y]=0;
                         spot1 = food();
                     }
+                    //在地图中表现出蛇的形状
                     for(var i=0;i<spot.length;i++){
                         var x = spot[i][0],
                             y = spot[i][1];
