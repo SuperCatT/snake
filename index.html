@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <meta name="keywords" content="关键词">
+        <meta name="description" content="描述">
+        <meta name="author" content="li">
+        <style>
+            body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+            ol,ul,li{margin:0;padding:0;list-style:none;}
+            img{border:none;}
+            #wrap{
+                position:relative;
+                width:400px;
+                height:400px;
+                margin: 100px auto;
+                border:1px solid #ccc;
+            }
+            span{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background-color:pink;
+            }
+            .on{
+                background-color:red;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrap" onkeydown = "move(event)">
+            <span id="header"></span>
+        </div>
+
+        <script>
+            //(function(){
+                var oHeader = document.getElementById("header"),
+                    oWrap = document.getElementById("wrap")
+                ;
+                var x = 0,
+                    y = 0,
+                    c =39,
+                    arrMap = [],
+                    xMax = 40,
+                    yMax = 40,
+                    length = 1,
+                    spot = [],
+                    spot1 = [],
+                    stop = false
+                ;
+                document.onkeydown = move;
+                function move(e) {
+                    // 兼容FF和IE和Opera
+                    var theEvent = e || window.event;
+                    var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                    if(length!==1){
+                        switch (c) {
+                            case 37:
+                                if (code === 39) {
+                                    code = 37;
+                                }
+                                break;
+                            case 38:
+                                if (code === 40) {
+                                    code = 38;
+                                }
+                                break;
+                            case 39:
+                                if (code === 37) {
+                                    code = 39;
+                                }
+                                break;
+                            case 40:
+                                if (code === 38) {
+                                    code = 40;
+                                }
+                                break;
+                        }
+                    }
+                    c = code;
+                    return true;
+                }
+                initMap();
+                spot1 = food();
+                setTimeout(move1,100);
+                function move1(){
+                    if(stop){
+                        stop = false;
+                        return;
+                    }
+                    switch(c){
+                        case 37:
+                            x -= 1;
+                            Record(x,y);
+                            printMap();
+                            break;
+                        case 38:
+                            y -= 1;
+                            Record(x,y);
+                            printMap();
+                            break;
+                        case 39:
+                            x += 1;
+                            Record(x,y);
+                            printMap();
+                            break;
+                        case 40:
+                            y += 1;
+                            Record(x,y);
+                            printMap();
+                            break;
+                        case 32:
+                            console.log(spot);
+                            return;
+                    }
+                    setTimeout(move1,100);
+                }
+                //初始化地图
+                function initMap(){
+                    for(var i=0;i<xMax;i++){
+                        arrMap[i] = [];
+                        for(var j=0;j<yMax;j++){
+                            arrMap[i][j]=1;
+                        }
+                    }
+                }
+                //绘制蛇和食物的图形
+                function printMap(){
+                    var str = "";
+                    for(var i=0;i<xMax;i++){
+                        for(var j=0;j<yMax;j++){
+                            switch(arrMap[i][j]){
+                                case 0:
+                                    str +="<span style='left:"+i*10+"px;"+"top:"+j*10+"px;"+"'></span>";
+                                    break;
+                                case 2:
+                                    str +="<span class='on' style='left:"+i*10+"px;"+"top:"+j*10+"px;"+"'></span>";
+                            }
+                        }
+                    }
+                    oWrap.innerHTML = str;
+                }
+                //记录移动的点
+                function Record(x,y){
+                    var arr =[x , y];
+                    spot.unshift(arr);
+                    if(!arrMap[x][y]){
+                        alert("你输了");
+                        stop = true;
+                        return;
+                    }
+                    initMap();
+                    arrMap[spot1[0]][spot1[1]]=2;
+                    if(spot.length !== length){
+                        spot.pop();
+                    }
+                    if(x<0||x>39){
+                        alert("你输了");
+                        stop = true;
+                        return;
+                    }
+                    if(arrMap[x][y]===2){
+                        length++;
+                        arrMap[x][y]=0;
+                        spot1 = food();
+                    }
+                    for(var i=0;i<spot.length;i++){
+                        var x = spot[i][0],
+                            y = spot[i][1];
+                        arrMap[x][y] = 0;
+                    }
+                }
+                //随机产生的点
+                function food(){
+                    do{
+                        var x = Math.floor(Math.random()*39),
+                            y = Math.floor(Math.random()*39)
+                        ;
+                    }while(!(arrMap[x][y]===1))
+                    var s = [x,y];
+                    return s;
+                }
+        </script>
+    </body>
+</html>
